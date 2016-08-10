@@ -1,5 +1,5 @@
 # kspark
-A Kotlin DSL for [Spark](https://github.com/perwendel/spark) - web development on the JVM with even less code!
+A Kotlin DSL for [Spark](https://github.com/perwendel/spark) - web development framework.
 
 ```kotlin
 import kspark.*
