@@ -4,12 +4,12 @@ import spark.Request
 import spark.Response
 import spark.Spark
 
-fun get(endpoint : String, route: KRoute.() -> Any) {
-    Spark.get(endpoint, adapt(route))
+fun get(endpoint : String, routeHandler: KRoute.() -> Any) {
+    Spark.get(endpoint, adapt(routeHandler))
 }
 
-fun post(endpoint : String, route: KRoute.() -> Any) {
-    Spark.post(endpoint, adapt(route))
+fun post(endpoint : String, routeHandler: KRoute.() -> Any) {
+    Spark.post(endpoint, adapt(routeHandler))
 }
 
 fun halt(status: Int, body: String) {
