@@ -18,16 +18,22 @@ View at: `http://localhost:4567/hello`
 import kspark.*
 
 fun main(args: Array<String>) {
-    get("/hello") { "Hello World!" }
+    get("/hello") { 
+        "Hello World!" 
+    }
 
-    post("/hello") { "Hello World: " + request.body() }
+    post("/hello") { 
+        "Hello World: " + request.body() 
+    }
 
     get("/private") {
         response.status(401)
         "Go Away!!!"
     }
 
-    get("/users/:name") { "Selected user: " + request.params(":name") }
+    get("/users/:name") { 
+        "Selected user: " + request.params(":name") 
+    }
 
     get("/news/:section") {
         response.type("text/xml")
@@ -42,6 +48,8 @@ fun main(args: Array<String>) {
         response.redirect("/news/world")
     }
 
-    get("/") { "root" }
+    get("/") { 
+        "root" 
+    }
 }
 ```
