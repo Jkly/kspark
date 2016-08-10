@@ -23,5 +23,3 @@ private fun adapt(handler: RouteHandler.() -> Any) =
             handler.invoke(RouteHandler(request, response))
         }
 
-
-data class RouteHandler(val request: Request, val response: Response)
