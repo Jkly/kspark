@@ -4,22 +4,20 @@ import spark.Request
 import spark.Response
 import spark.Spark
 
-fun get(endpoint : String,
-        routeHandler: RouteHandler.() -> Any) {
-    Spark.get(endpoint, adapt(routeHandler))
+fun get(endpoint : String, route: KRoute.() -> Any) {
+    Spark.get(endpoint, adapt(route))
 }
 
-fun post(endpoint : String,
-         routeHandler: RouteHandler.() -> Any) {
-    Spark.post(endpoint, adapt(routeHandler))
+fun post(endpoint : String, route: KRoute.() -> Any) {
+    Spark.post(endpoint, adapt(route))
 }
 
 fun halt(status: Int, body: String) {
     Spark.halt(status, body)
 }
 
-private fun adapt(handler: RouteHandler.() -> Any) =
+private fun adapt(handle: KRoute.() -> Any) =
         { request: Request, response: Response ->
-            handler.invoke(RouteHandler(request, response))
+            handle(KRoute(request, response))
         }
 
