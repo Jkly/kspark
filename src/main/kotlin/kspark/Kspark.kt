@@ -5,13 +5,13 @@ import spark.Response
 import spark.Spark
 
 fun get(endpoint : String,
-        route: RouteHandler.() -> Any) {
-    Spark.get(endpoint, adapt(route))
+        routeHandler: RouteHandler.() -> Any) {
+    Spark.get(endpoint, adapt(routeHandler))
 }
 
 fun post(endpoint : String,
-        route: RouteHandler.() -> Any) {
-    Spark.post(endpoint, adapt(route))
+         routeHandler: RouteHandler.() -> Any) {
+    Spark.post(endpoint, adapt(routeHandler))
 }
 
 fun halt(status: Int, body: String) {
