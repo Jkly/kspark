@@ -14,6 +14,7 @@ View at: `http://localhost:4567/hello`
 
 ## Examples
 
+Create endpoints with less code:
 ```kotlin
 import kspark.*
 
@@ -50,6 +51,21 @@ fun main(args: Array<String>) {
 
     get("/") { 
         "root" 
+    }
+}
+```
+---
+Respond with JSON:
+```kotlin
+import kspark.*
+import kspark.extension.toJson
+
+data class FooBar(val foo:String, val bar:String)
+
+fun main(args: Array<String>) {
+    get("/example.json") {
+        response.type("application/json")
+        FooBar("foo", "bar").toJson()
     }
 }
 ```
