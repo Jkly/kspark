@@ -1,5 +1,5 @@
 # kspark
-A Kotlin DSL for [Spark](https://github.com/perwendel/spark), the Ruby Sinatra-inspired web development framework.
+A Kotlin DSL for [Spark](https://github.com/perwendel/spark), the [Ruby Sinatra](http://www.sinatrarb.com/)-inspired web development framework.
 
 ```kotlin
 import kspark.*
