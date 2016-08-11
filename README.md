@@ -58,7 +58,6 @@ fun main(args: Array<String>) {
 Receiving JSON:
 ```kotlin
 import kspark.*
-import kspark.extension.toJson
 
 data class FooBar(val foo:String, val bar:String)
 
@@ -82,7 +81,6 @@ Returns: `got hello world`
 Respond with JSON:
 ```kotlin
 import kspark.*
-import kspark.extension.toJson
 
 data class FooBar(val foo:String, val bar:String)
 
