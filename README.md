@@ -55,6 +55,30 @@ fun main(args: Array<String>) {
 }
 ```
 ---
+Receiving JSON:
+```kotlin
+import kspark.*
+import kspark.extension.toJson
+
+data class FooBar(val foo:String, val bar:String)
+
+fun main(args: Array<String>) {
+    post("/example.json") {
+        val fooBar:FooBar = request.body().fromJson()
+        "got ${fooBar.foo} ${fooBar.bar}"
+    }
+}
+```
+With this request:
+```json
+{
+  "foo": "hello",
+  "bar": "world"
+}
+```
+Returns: `got hello world`
+
+---
 Respond with JSON:
 ```kotlin
 import kspark.*
@@ -67,5 +91,12 @@ fun main(args: Array<String>) {
         response.type("application/json")
         FooBar("foo", "bar").toJson()
     }
+}
+```
+Returns:
+```json
+{
+  "foo": "foo",
+  "bar": "bar"
 }
 ```
