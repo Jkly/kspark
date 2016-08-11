@@ -12,10 +12,6 @@ fun post(endpoint : String, routeHandler: KRoute.() -> Any) {
     Spark.post(endpoint, adapt(routeHandler))
 }
 
-fun halt(status: Int, body: String) {
-    Spark.halt(status, body)
-}
-
 fun put(path: String, routeHandler: KRoute.() -> Any) {
     Spark.put(path, adapt(routeHandler))
 }

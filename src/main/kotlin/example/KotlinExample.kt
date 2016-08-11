@@ -1,6 +1,8 @@
 package example
 
-import kspark.*
+import kspark.get
+import kspark.post
+import spark.Spark.halt
 
 fun main(args: Array<String>) {
     get("/hello") { "Hello World!" }
