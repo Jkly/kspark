@@ -15,7 +15,7 @@ View at: `http://localhost:4567/hello`
 ## Aims
 This is just a thin-layer over Spark to make web development easier where the Kotlin language makes it possible. 
 
-For more information on the capabilities of the web framework, see here: http://sparkjava.com/documentation.htm
+For more information on the capabilities of the web framework, see here: http://sparkjava.com/documentation.html
 
 ## Examples
 
