@@ -11,9 +11,6 @@ import spark.Spark
 import java.io.IOException
 import java.net.ConnectException
 
-const val MAX_CALL_ATTEMPTS = 3
-const val RETRY_DELAY_MILLIS = 100L
-
 class KSparkIntegrationTest : ShouldSpec() {
     override val oneInstancePerTest = true
 
@@ -74,6 +71,8 @@ class KSparkIntegrationTest : ShouldSpec() {
 
     companion object {
         val LOGGER:Logger = LoggerFactory.getLogger(KSparkIntegrationTest::class.java)
+        const val MAX_CALL_ATTEMPTS = 3
+        const val RETRY_DELAY_MILLIS = 100L
     }
 
 }
