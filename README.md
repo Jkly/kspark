@@ -29,7 +29,7 @@ fun main(args: Array<String>) {
     }
 
     post("/hello") { 
-        "Hello World: " + request.body() 
+        "Hello World: ${request.body()}"
     }
 
     get("/private") {
@@ -38,12 +38,12 @@ fun main(args: Array<String>) {
     }
 
     get("/users/:name") { 
-        "Selected user: " + request.params(":name") 
+        "Selected user: ${request.params(":name")}"
     }
 
     get("/news/:section") {
         response.type("text/xml")
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?><news>" + request.params("section") + "</news>"
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?><news>${request.params("section")}</news>"
     }
 
     get("/protected") {
