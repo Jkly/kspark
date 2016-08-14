@@ -15,19 +15,20 @@ class KSparkIntegrationTest : ShouldSpec() {
     }
 
     init {
-        val client = OkHttpClient()
-
         "spark service" {
+            val client = OkHttpClient()
+
             get("/hello") { "Hello World!" }
 
-            post("/hello") { "Hello World: " + request.body() }
+            post("/hello") { "Hello World: ${request.body()}" }
+
+            put("/item/:id") { "Added item ${request.params(":id")}: ${request.body()}" }
 
             should("receive get request and respond with string in body") {
                 val request = Request.Builder().get().url("http://localhost:4567/hello").build()
 
                 val response = client.newCall(request).execute()
 
-                response.isSuccessful shouldBe true
                 response.body().string() shouldBe "Hello World!"
             }
 
@@ -37,8 +38,16 @@ class KSparkIntegrationTest : ShouldSpec() {
 
                 val response = client.newCall(request).execute()
 
-                response.isSuccessful shouldBe true
                 response.body().string() shouldBe "Hello World: Bob"
+            }
+
+            should("receive put request param and include in response") {
+                val request = Request.Builder().url("http://localhost:4567/item/1234")
+                        .put(RequestBody.create(MediaType.parse("application/text"), "Bob")).build()
+
+                val response = client.newCall(request).execute()
+
+                response.body().string() shouldBe "Added item 1234: Bob"
             }
         }
     }
