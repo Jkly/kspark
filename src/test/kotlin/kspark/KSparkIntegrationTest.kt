@@ -24,10 +24,10 @@ class KSparkIntegrationTest : ShouldSpec() {
     init {
         "spark service" {
             get("/hello") { "Hello World!" }
-
             post("/hello") { "Hello World: ${request.body()}" }
-
             put("/item/:id") { "Added item ${request.params(":id")}: ${request.body()}" }
+            patch("/item/:id") { "Patched item ${request.params(":id")}: ${request.body()}" }
+            delete("/item/:id") { "Deleted item ${request.params(":id")}" }
 
             should("receive get request and respond with string in body") {
                 val request = Request.Builder().get().url("http://localhost:4567/hello").build()
@@ -44,9 +44,22 @@ class KSparkIntegrationTest : ShouldSpec() {
 
             should("receive put request param and include in response") {
                 val request = Request.Builder().url("http://localhost:4567/item/1234")
-                        .put(RequestBody.create(MediaType.parse("application/text"), "Bob")).build()
+                        .put(RequestBody.create(MediaType.parse("application/json"), "{\"id\": 1234, \"name\": \"Bob\"}")).build()
 
-                call(request) shouldBe "Added item 1234: Bob"
+                call(request) shouldBe "Added item 1234: {\"id\": 1234, \"name\": \"Bob\"}"
+            }
+
+            should("receive patch request param and include in response") {
+                val request = Request.Builder().url("http://localhost:4567/item/1234")
+                        .patch(RequestBody.create(MediaType.parse("application/json"), "{\"name\": \"Bob\"}")).build()
+
+                call(request) shouldBe "Patched item 1234: {\"name\": \"Bob\"}"
+            }
+
+            should("receive delete request param") {
+                val request = Request.Builder().url("http://localhost:4567/item/1234").delete().build()
+
+                call(request) shouldBe "Deleted item 1234"
             }
         }
     }
