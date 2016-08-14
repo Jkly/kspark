@@ -5,10 +5,20 @@ import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import spark.Spark
+import java.io.IOException
+import java.net.ConnectException
+
+const val MAX_CALL_ATTEMPTS = 3
+const val RETRY_DELAY_MILLIS = 100L
 
 class KSparkIntegrationTest : ShouldSpec() {
     override val oneInstancePerTest = true
+
+    val client:OkHttpClient = OkHttpClient().newBuilder()
+            .retryOnConnectionFailure(true).build()
 
     override fun afterAll() {
         Spark.stop()
@@ -16,8 +26,6 @@ class KSparkIntegrationTest : ShouldSpec() {
 
     init {
         "spark service" {
-            val client = OkHttpClient()
-
             get("/hello") { "Hello World!" }
 
             post("/hello") { "Hello World: ${request.body()}" }
@@ -27,28 +35,45 @@ class KSparkIntegrationTest : ShouldSpec() {
             should("receive get request and respond with string in body") {
                 val request = Request.Builder().get().url("http://localhost:4567/hello").build()
 
-                val response = client.newCall(request).execute()
-
-                response.body().string() shouldBe "Hello World!"
+                call(request) shouldBe "Hello World!"
             }
 
             should("receive post request body and include in response") {
                 val request = Request.Builder().url("http://localhost:4567/hello")
                         .post(RequestBody.create(MediaType.parse("application/text"), "Bob")).build()
 
-                val response = client.newCall(request).execute()
-
-                response.body().string() shouldBe "Hello World: Bob"
+                call(request) shouldBe "Hello World: Bob"
             }
 
             should("receive put request param and include in response") {
                 val request = Request.Builder().url("http://localhost:4567/item/1234")
                         .put(RequestBody.create(MediaType.parse("application/text"), "Bob")).build()
 
-                val response = client.newCall(request).execute()
-
-                response.body().string() shouldBe "Added item 1234: Bob"
+                call(request) shouldBe "Added item 1234: Bob"
             }
         }
     }
+
+    private fun call(request: Request) : String {
+        for (attempt in 1..MAX_CALL_ATTEMPTS) {
+            try {
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    return response.body().string()
+                }
+            } catch (e: ConnectException) {
+                LOGGER.error("Could not connect on attempt $attempt", e)
+                if (attempt == MAX_CALL_ATTEMPTS) {
+                    throw e
+                }
+                Thread.sleep(RETRY_DELAY_MILLIS)
+            }
+        }
+        throw IOException("Could not execute: $request")
+    }
+
+    companion object {
+        val LOGGER:Logger = LoggerFactory.getLogger(KSparkIntegrationTest::class.java)
+    }
+
 }
