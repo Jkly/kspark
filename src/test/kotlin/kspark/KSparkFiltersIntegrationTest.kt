@@ -44,6 +44,14 @@ class KSparkFiltersIntegrationTest : ShouldSpec() {
                 response.body().string() shouldBe "Hello World!"
             }
 
+            should("receive get request and receive header added by after filter") {
+                val request = Request.Builder().get().url("http://localhost:$PORT/hello")
+                        .addHeader("user", "authenticated user")
+                        .build()
+                val response = client.call(request)
+                response.header("foo") shouldBe "set by after filter"
+            }
+
         }
     }
 
