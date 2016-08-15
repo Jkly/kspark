@@ -27,6 +27,7 @@ class KSparkIntegrationTest : ShouldSpec() {
             delete("/item/:id") { "Deleted item ${request.params(":id")}" }
             head("/hello") {  }
             options("/hello") { "GET,POST,HEAD,OPTIONS" }
+            get("/hello", "application/json") { "{\"Hello\": \"World!\"}" }
 
             should("receive get request and respond with string in body") {
                 val request = Request.Builder().get().url("http://localhost:4567/hello").build()
@@ -64,6 +65,12 @@ class KSparkIntegrationTest : ShouldSpec() {
             should("receive options request and respond with valid verbs") {
                 val request = Request.Builder().url("http://localhost:4567/hello").method("OPTIONS", null).build()
                 call(request).body().string() shouldBe "GET,POST,HEAD,OPTIONS"
+            }
+
+            should("receive get request with json media type and respond with string in body") {
+                val request = Request.Builder().get().url("http://localhost:4567/hello")
+                        .addHeader("Accept", "application/json").build()
+                call(request).body().string() shouldBe "{\"Hello\": \"World!\"}"
             }
         }
     }
