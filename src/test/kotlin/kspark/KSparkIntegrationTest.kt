@@ -27,8 +27,11 @@ class KSparkIntegrationTest : ShouldSpec() {
             delete("/item/:id") { "Deleted item ${request.params(":id")}" }
             head("/hello") {  }
             options("/hello") { "GET,POST,HEAD,OPTIONS" }
+
             get("/hello", "application/json") { "{\"Hello\": \"World!\"}" }
-            post("/hello", "application/json") { "{\"requestBody\": \"${request.body()}\"" }
+            post("/hello", "application/json") { "{\"requestBody\": \"${request.body()}\"}" }
+            put("/item/:id", "application/json") { "{\"addedItem\": \"${request.params(":id")}\"}" }
+
 
             should("receive get request and respond with string in body") {
                 val request = Request.Builder().get().url("http://localhost:4567/hello").build()
@@ -76,9 +79,17 @@ class KSparkIntegrationTest : ShouldSpec() {
 
             should("receive post request with json accept type and include in body") {
                 val request = Request.Builder().get().url("http://localhost:4567/hello")
+                        .addHeader("Accept", "application/json")
                         .post(RequestBody.create(MediaType.parse("application/text"), "Bob"))
-                        .addHeader("Accept", "application/json").build()
-                call(request).body().string() shouldBe "{\"requestBody\": \"Bob\""
+                        .build()
+                call(request).body().string() shouldBe "{\"requestBody\": \"Bob\"}"
+            }
+
+            should("receive put request param with json accept type and include in response") {
+                val request = Request.Builder().url("http://localhost:4567/item/1234")
+                        .addHeader("Accept", "application/json")
+                        .put(RequestBody.create(MediaType.parse("application/json"), "{\"id\": 1234, \"name\": \"Bob\"}")).build()
+                call(request).body().string() shouldBe "{\"addedItem\": \"1234\"}"
             }
         }
     }
