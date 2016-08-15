@@ -1,6 +1,5 @@
 package kspark.extension
 
-import kspark.KSparkVerbsIntegrationTest
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -11,7 +10,7 @@ import java.net.ConnectException
 
 class OkHttpClients {
     companion object {
-        val LOGGER: Logger = LoggerFactory.getLogger(KSparkVerbsIntegrationTest::class.java)
+        val LOGGER: Logger = LoggerFactory.getLogger(OkHttpClients::class.java)
         const val MAX_CALL_ATTEMPTS = 3
         const val RETRY_DELAY_MILLIS = 100L
     }
