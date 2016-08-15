@@ -108,7 +108,7 @@ class KSparkIntegrationTest : ShouldSpec() {
                 call(request).body().string() shouldBe "{\"deletedItem\": \"1234\"}"
             }
 
-            should("receive options request with json accept typeand respond with valid verbs") {
+            should("receive options request with json accept type and respond with valid verbs") {
                 val request = Request.Builder().url("http://localhost:4567/hello")
                         .addHeader("Accept", "application/json")
                         .method("OPTIONS", null).build()
