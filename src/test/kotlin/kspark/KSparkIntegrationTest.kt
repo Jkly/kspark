@@ -28,6 +28,7 @@ class KSparkIntegrationTest : ShouldSpec() {
             head("/hello") {  }
             options("/hello") { "GET,POST,HEAD,OPTIONS" }
             get("/hello", "application/json") { "{\"Hello\": \"World!\"}" }
+            post("/hello", "application/json") { "{\"requestBody\": \"${request.body()}\"" }
 
             should("receive get request and respond with string in body") {
                 val request = Request.Builder().get().url("http://localhost:4567/hello").build()
@@ -67,10 +68,17 @@ class KSparkIntegrationTest : ShouldSpec() {
                 call(request).body().string() shouldBe "GET,POST,HEAD,OPTIONS"
             }
 
-            should("receive get request with json media type and respond with string in body") {
+            should("receive get request with json accept type and respond with string in body") {
                 val request = Request.Builder().get().url("http://localhost:4567/hello")
                         .addHeader("Accept", "application/json").build()
                 call(request).body().string() shouldBe "{\"Hello\": \"World!\"}"
+            }
+
+            should("receive post request with json accept type and include in body") {
+                val request = Request.Builder().get().url("http://localhost:4567/hello")
+                        .post(RequestBody.create(MediaType.parse("application/text"), "Bob"))
+                        .addHeader("Accept", "application/json").build()
+                call(request).body().string() shouldBe "{\"requestBody\": \"Bob\""
             }
         }
     }
