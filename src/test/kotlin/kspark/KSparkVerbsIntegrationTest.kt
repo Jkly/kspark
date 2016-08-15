@@ -1,12 +1,12 @@
 package kspark
 
 import io.kotlintest.specs.ShouldSpec
-import okhttp3.*
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import kspark.extension.call
+import okhttp3.MediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
 import spark.Spark
-import java.io.IOException
-import java.net.ConnectException
 
 class KSparkVerbsIntegrationTest : ShouldSpec() {
     val client:OkHttpClient = OkHttpClient().newBuilder()
@@ -37,46 +37,46 @@ class KSparkVerbsIntegrationTest : ShouldSpec() {
 
             should("receive get request and respond with string in body") {
                 val request = Request.Builder().get().url("http://localhost:56789/hello").build()
-                call(request).body().string() shouldBe "Hello World!"
+                client.call(request).body().string() shouldBe "Hello World!"
             }
 
             should("receive post request body and include in response") {
                 val request = Request.Builder().url("http://localhost:56789/hello")
                         .post(RequestBody.create(MediaType.parse("application/text"), "Bob")).build()
-                call(request).body().string() shouldBe "Hello World: Bob"
+                client.call(request).body().string() shouldBe "Hello World: Bob"
             }
 
             should("receive put request param and include in response") {
                 val request = Request.Builder().url("http://localhost:56789/item/1234")
                         .put(RequestBody.create(MediaType.parse("application/json"), "{\"id\": 1234, \"name\": \"Bob\"}")).build()
-                call(request).body().string() shouldBe "Added item 1234: {\"id\": 1234, \"name\": \"Bob\"}"
+                client.call(request).body().string() shouldBe "Added item 1234: {\"id\": 1234, \"name\": \"Bob\"}"
             }
 
             should("receive patch request param and include in response") {
                 val request = Request.Builder().url("http://localhost:56789/item/1234")
                         .patch(RequestBody.create(MediaType.parse("application/json"), "{\"name\": \"Bob\"}")).build()
-                call(request).body().string() shouldBe "Patched item 1234: {\"name\": \"Bob\"}"
+                client.call(request).body().string() shouldBe "Patched item 1234: {\"name\": \"Bob\"}"
             }
 
             should("receive delete request param") {
                 val request = Request.Builder().url("http://localhost:56789/item/1234").delete().build()
-                call(request).body().string() shouldBe "Deleted item 1234"
+                client.call(request).body().string() shouldBe "Deleted item 1234"
             }
 
             should("receive head request and respond with nothing") {
                 val request = Request.Builder().url("http://localhost:56789/hello").head().build()
-                call(request).body().string() shouldBe ""
+                client.call(request).body().string() shouldBe ""
             }
 
             should("receive options request and respond with valid verbs") {
                 val request = Request.Builder().url("http://localhost:56789/hello").method("OPTIONS", null).build()
-                call(request).body().string() shouldBe "GET,POST,HEAD,OPTIONS"
+                client.call(request).body().string() shouldBe "GET,POST,HEAD,OPTIONS"
             }
 
             should("receive get request with json accept type and respond with string in body") {
                 val request = Request.Builder().get().url("http://localhost:56789/hello")
                         .addHeader("Accept", "application/json").build()
-                call(request).body().string() shouldBe "{\"Hello\": \"World!\"}"
+                client.call(request).body().string() shouldBe "{\"Hello\": \"World!\"}"
             }
 
             should("receive post request with json accept type and include in body") {
@@ -84,61 +84,36 @@ class KSparkVerbsIntegrationTest : ShouldSpec() {
                         .addHeader("Accept", "application/json")
                         .post(RequestBody.create(MediaType.parse("application/text"), "Bob"))
                         .build()
-                call(request).body().string() shouldBe "{\"requestBody\": \"Bob\"}"
+                client.call(request).body().string() shouldBe "{\"requestBody\": \"Bob\"}"
             }
 
             should("receive put request param with json accept type and include in response") {
                 val request = Request.Builder().url("http://localhost:56789/item/1234")
                         .addHeader("Accept", "application/json")
                         .put(RequestBody.create(MediaType.parse("application/json"), "{\"id\": 1234, \"name\": \"Bob\"}")).build()
-                call(request).body().string() shouldBe "{\"addedItem\": \"1234\"}"
+                client.call(request).body().string() shouldBe "{\"addedItem\": \"1234\"}"
             }
 
             should("receive patch request param with json accept type and include in response") {
                 val request = Request.Builder().url("http://localhost:56789/item/1234")
                         .addHeader("Accept", "application/json")
                         .patch(RequestBody.create(MediaType.parse("application/json"), "{\"name\": \"Bob\"}")).build()
-                call(request).body().string() shouldBe "{\"patchedItem\": \"1234\"}"
+                client.call(request).body().string() shouldBe "{\"patchedItem\": \"1234\"}"
             }
 
             should("receive delete request param with json accept type") {
                 val request = Request.Builder().url("http://localhost:56789/item/1234")
                         .addHeader("Accept", "application/json")
                         .delete().build()
-                call(request).body().string() shouldBe "{\"deletedItem\": \"1234\"}"
+                client.call(request).body().string() shouldBe "{\"deletedItem\": \"1234\"}"
             }
 
             should("receive options request with json accept type and respond with valid verbs") {
                 val request = Request.Builder().url("http://localhost:56789/hello")
                         .addHeader("Accept", "application/json")
                         .method("OPTIONS", null).build()
-                call(request).body().string() shouldBe "{\"options\": [\"GET\",\"POST\",\"HEAD\",\"OPTIONS\"}"
+                client.call(request).body().string() shouldBe "{\"options\": [\"GET\",\"POST\",\"HEAD\",\"OPTIONS\"}"
             }
         }
     }
-
-    private fun call(request: Request) : Response {
-        for (attempt in 1..MAX_CALL_ATTEMPTS) {
-            try {
-                val response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    return response
-                }
-            } catch (e: ConnectException) {
-                LOGGER.error("Could not connect on attempt $attempt", e)
-                if (attempt == MAX_CALL_ATTEMPTS) {
-                    throw e
-                }
-                Thread.sleep(RETRY_DELAY_MILLIS)
-            }
-        }
-        throw IOException("Could not execute: $request")
-    }
-
-    companion object {
-        val LOGGER:Logger = LoggerFactory.getLogger(KSparkVerbsIntegrationTest::class.java)
-        const val MAX_CALL_ATTEMPTS = 3
-        const val RETRY_DELAY_MILLIS = 100L
-    }
-
 }
