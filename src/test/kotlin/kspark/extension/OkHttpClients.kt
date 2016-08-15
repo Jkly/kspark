@@ -20,7 +20,7 @@ fun OkHttpClient.call(request: Request) : Response {
     for (attempt in 1..OkHttpClients.MAX_CALL_ATTEMPTS) {
         try {
             val response = this.newCall(request).execute()
-            if (response.isSuccessful) {
+            if (response.isSuccessful || (response.code() >= 400 && response.code() < 500)) {
                 return response
             }
         } catch (e: ConnectException) {
