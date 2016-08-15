@@ -18,7 +18,7 @@ class KSparkVerbsIntegrationTest : ShouldSpec() {
 
     init {
         "spark service" {
-            Spark.port(56789)
+            Spark.port(PORT)
 
             get("/hello") { "Hello World!" }
             post("/hello") { "Hello World: ${request.body()}" }
@@ -36,51 +36,51 @@ class KSparkVerbsIntegrationTest : ShouldSpec() {
             options("/hello", "application/json") { "{\"options\": [\"GET\",\"POST\",\"HEAD\",\"OPTIONS\"}" }
 
             should("receive get request and respond with string in body") {
-                val request = Request.Builder().get().url("http://localhost:56789/hello").build()
+                val request = Request.Builder().get().url("http://localhost:$PORT/hello").build()
                 client.call(request).body().string() shouldBe "Hello World!"
             }
 
             should("receive post request body and include in response") {
-                val request = Request.Builder().url("http://localhost:56789/hello")
+                val request = Request.Builder().url("http://localhost:$PORT/hello")
                         .post(RequestBody.create(MediaType.parse("application/text"), "Bob")).build()
                 client.call(request).body().string() shouldBe "Hello World: Bob"
             }
 
             should("receive put request param and include in response") {
-                val request = Request.Builder().url("http://localhost:56789/item/1234")
+                val request = Request.Builder().url("http://localhost:$PORT/item/1234")
                         .put(RequestBody.create(MediaType.parse("application/json"), "{\"id\": 1234, \"name\": \"Bob\"}")).build()
                 client.call(request).body().string() shouldBe "Added item 1234: {\"id\": 1234, \"name\": \"Bob\"}"
             }
 
             should("receive patch request param and include in response") {
-                val request = Request.Builder().url("http://localhost:56789/item/1234")
+                val request = Request.Builder().url("http://localhost:$PORT/item/1234")
                         .patch(RequestBody.create(MediaType.parse("application/json"), "{\"name\": \"Bob\"}")).build()
                 client.call(request).body().string() shouldBe "Patched item 1234: {\"name\": \"Bob\"}"
             }
 
             should("receive delete request param") {
-                val request = Request.Builder().url("http://localhost:56789/item/1234").delete().build()
+                val request = Request.Builder().url("http://localhost:$PORT/item/1234").delete().build()
                 client.call(request).body().string() shouldBe "Deleted item 1234"
             }
 
             should("receive head request and respond with nothing") {
-                val request = Request.Builder().url("http://localhost:56789/hello").head().build()
+                val request = Request.Builder().url("http://localhost:$PORT/hello").head().build()
                 client.call(request).body().string() shouldBe ""
             }
 
             should("receive options request and respond with valid verbs") {
-                val request = Request.Builder().url("http://localhost:56789/hello").method("OPTIONS", null).build()
+                val request = Request.Builder().url("http://localhost:$PORT/hello").method("OPTIONS", null).build()
                 client.call(request).body().string() shouldBe "GET,POST,HEAD,OPTIONS"
             }
 
             should("receive get request with json accept type and respond with string in body") {
-                val request = Request.Builder().get().url("http://localhost:56789/hello")
+                val request = Request.Builder().get().url("http://localhost:$PORT/hello")
                         .addHeader("Accept", "application/json").build()
                 client.call(request).body().string() shouldBe "{\"Hello\": \"World!\"}"
             }
 
             should("receive post request with json accept type and include in body") {
-                val request = Request.Builder().get().url("http://localhost:56789/hello")
+                val request = Request.Builder().get().url("http://localhost:$PORT/hello")
                         .addHeader("Accept", "application/json")
                         .post(RequestBody.create(MediaType.parse("application/text"), "Bob"))
                         .build()
@@ -88,32 +88,36 @@ class KSparkVerbsIntegrationTest : ShouldSpec() {
             }
 
             should("receive put request param with json accept type and include in response") {
-                val request = Request.Builder().url("http://localhost:56789/item/1234")
+                val request = Request.Builder().url("http://localhost:$PORT/item/1234")
                         .addHeader("Accept", "application/json")
                         .put(RequestBody.create(MediaType.parse("application/json"), "{\"id\": 1234, \"name\": \"Bob\"}")).build()
                 client.call(request).body().string() shouldBe "{\"addedItem\": \"1234\"}"
             }
 
             should("receive patch request param with json accept type and include in response") {
-                val request = Request.Builder().url("http://localhost:56789/item/1234")
+                val request = Request.Builder().url("http://localhost:$PORT/item/1234")
                         .addHeader("Accept", "application/json")
                         .patch(RequestBody.create(MediaType.parse("application/json"), "{\"name\": \"Bob\"}")).build()
                 client.call(request).body().string() shouldBe "{\"patchedItem\": \"1234\"}"
             }
 
             should("receive delete request param with json accept type") {
-                val request = Request.Builder().url("http://localhost:56789/item/1234")
+                val request = Request.Builder().url("http://localhost:$PORT/item/1234")
                         .addHeader("Accept", "application/json")
                         .delete().build()
                 client.call(request).body().string() shouldBe "{\"deletedItem\": \"1234\"}"
             }
 
             should("receive options request with json accept type and respond with valid verbs") {
-                val request = Request.Builder().url("http://localhost:56789/hello")
+                val request = Request.Builder().url("http://localhost:$PORT/hello")
                         .addHeader("Accept", "application/json")
                         .method("OPTIONS", null).build()
                 client.call(request).body().string() shouldBe "{\"options\": [\"GET\",\"POST\",\"HEAD\",\"OPTIONS\"}"
             }
         }
+    }
+    
+    companion object {
+        const val PORT = 5678
     }
 }
