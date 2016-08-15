@@ -31,6 +31,7 @@ class KSparkIntegrationTest : ShouldSpec() {
             get("/hello", "application/json") { "{\"Hello\": \"World!\"}" }
             post("/hello", "application/json") { "{\"requestBody\": \"${request.body()}\"}" }
             put("/item/:id", "application/json") { "{\"addedItem\": \"${request.params(":id")}\"}" }
+            patch("/item/:id", "application/json") { "{\"patchedItem\": \"${request.params(":id")}\"}" }
 
 
             should("receive get request and respond with string in body") {
@@ -90,6 +91,13 @@ class KSparkIntegrationTest : ShouldSpec() {
                         .addHeader("Accept", "application/json")
                         .put(RequestBody.create(MediaType.parse("application/json"), "{\"id\": 1234, \"name\": \"Bob\"}")).build()
                 call(request).body().string() shouldBe "{\"addedItem\": \"1234\"}"
+            }
+
+            should("receive patch request param with json accept type and include in response") {
+                val request = Request.Builder().url("http://localhost:4567/item/1234")
+                        .addHeader("Accept", "application/json")
+                        .patch(RequestBody.create(MediaType.parse("application/json"), "{\"name\": \"Bob\"}")).build()
+                call(request).body().string() shouldBe "{\"patchedItem\": \"1234\"}"
             }
         }
     }
