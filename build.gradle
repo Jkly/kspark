@@ -1,3 +1,5 @@
+group 'jkly'
+
 buildscript {
     ext.kotlin_version = '1.0.3'
 
@@ -11,8 +13,7 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
-
-sourceCompatibility = 1.5
+apply plugin: 'maven'
 
 ext {
     log4jVersion = "2.6.2"
