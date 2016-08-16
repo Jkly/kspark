@@ -79,6 +79,7 @@ class KSparkFiltersIntegrationTest : ShouldSpec() {
                         .addHeader("Accept", "application/json").build()
                 val response = client.call(request)
                 response.header("Content-Type") shouldBe "application/json"
+                response.body().string() shouldBe "{\"Hello\": \"World!\"}"
             }
 
             should("receive get request and set the xml content-type in the response header") {
@@ -86,6 +87,7 @@ class KSparkFiltersIntegrationTest : ShouldSpec() {
                         .addHeader("Accept", "application/xml").build()
                 val response = client.call(request)
                 response.header("Content-Type") shouldBe "application/xml"
+                response.body().string() shouldBe "<Hello>World!</Hello>"
             }
 
         }
