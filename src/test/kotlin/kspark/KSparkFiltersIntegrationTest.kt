@@ -29,6 +29,7 @@ class KSparkFiltersIntegrationTest : ShouldSpec() {
                 response.header("foo", "set by after filter")
             }
 
+            get("/accept-check") { "{\"Hello\": \"World!\"}" }
             before("/accept-check", "application/xml") {
                 Spark.halt(406, "xml not supported")
             }
@@ -63,6 +64,14 @@ class KSparkFiltersIntegrationTest : ShouldSpec() {
                 val response = client.call(request)
                 response.code() shouldBe 406
                 response.body().string() shouldBe "xml not supported"
+            }
+
+            should("receive get request and not go through filter with accept type") {
+                val request = Request.Builder().get().url("http://localhost:$PORT/accept-check")
+                        .addHeader("user", "authenticated user")
+                        .addHeader("Accept", "application/json").build()
+                val response = client.call(request)
+                response.code() shouldBe 200
             }
 
         }
