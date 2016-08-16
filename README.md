@@ -1,4 +1,6 @@
 # kspark
+[![Build Status](https://semaphoreci.com/api/v1/jkly/kspark/branches/master/badge.svg)](https://semaphoreci.com/jkly/kspark)
+
 A Kotlin DSL for [Spark](https://github.com/perwendel/spark), the [Ruby Sinatra](http://www.sinatrarb.com/)-inspired web development framework.
 
 ```kotlin
