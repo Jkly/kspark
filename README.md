@@ -19,6 +19,9 @@ This is just a thin-layer over Spark to make web development easier where the Ko
 
 For more information on the capabilities of the web framework, see here: http://sparkjava.com/documentation.html
 
+## How to install
+Instructions to download or include the Kspark dependency can be found [here](https://jitpack.io/#jkly/kspark).
+
 ## Examples
 
 Create endpoints with less code:
