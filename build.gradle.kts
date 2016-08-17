@@ -36,4 +36,4 @@ dependencies {
     testCompile("io.kotlintest:kotlintest:1.3.0")
 }
 
-fun log4jModule(module: String): String = "org.jetbrains.kotlin:kotlin-$module:2.6.2"
+fun log4jModule(module: String): String = "org.apache.logging.log4j:$module:2.6.2"
